@@ -1,73 +1,29 @@
-<h1 class="text-center mt-4">Lista de Productos</h1>
-<div class="container mt-4">
-  <div class="row">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Productos</title>
+  <script type="module" src="/js/cartActions.js"></script>
+</head>
+<body>
+  <h1>Productos</h1>
+  <ul>
     {{#each products}}
-      <div class="col-md-4 mb-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">{{this.title}}</h5>
-            <p class="card-text">{{this.description}}</p>
-            <p class="card-text"><strong>Precio:</strong> ${{this.price}}</p>
-            <p class="card-text"><strong>Stock:</strong> {{this.stock}}</p>
-            <p class="card-text"><strong>Categoría:</strong> {{this.category}}</p>
-            <button 
-              class="btn btn-primary agregar-carrito" 
-              data-productid="{{this._id}}"
-              >
-              Agregar al carrito
-            </button>
-          </div>
-        </div>
-      </div>
+      <li>
+        <strong>{{this.title}}</strong> - ${{this.price}} - {{this.category}}
+        <button onclick="addToCart('{{this._id}}', '{{../cartId}}')">Agregar al carrito</button>
+      </li>
     {{/each}}
-  </div>
+  </ul>
 
-  {{#if pagination}}
-    <nav aria-label="Page navigation" class="mt-4">
-      <ul class="pagination justify-content-center">
-        {{#if pagination.hasPrevPage}}
-          <li class="page-item">
-            <a class="page-link" href="/products?page={{pagination.prevPage}}">Anterior</a>
-          </li>
-        {{/if}}
-
-        <li class="page-item active">
-          <span class="page-link">{{pagination.page}}</span>
-        </li>
-
-        {{#if pagination.hasNextPage}}
-          <li class="page-item">
-            <a class="page-link" href="/products?page={{pagination.nextPage}}">Siguiente</a>
-          </li>
-        {{/if}}
-      </ul>
-    </nav>
-  {{/if}}
-</div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const botones = document.querySelectorAll('.agregar-carrito');
-    const carritoId = '6826567aada8ccd806c26121'; 
-
-    botones.forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const productId = btn.getAttribute('data-productid');
-
-        try {
-          const response = await fetch(`/api/carts/${carritoId}/product/${productId}`, {
-            method: 'POST',
-          });
-
-          if (response.ok) {
-            alert('Producto agregado al carrito!');
-          } else {
-            alert('Error al agregar producto al carrito');
-          }
-        } catch (error) {
-          alert('Error en la comunicación con el servidor');
-        }
-      });
-    });
-  });
-</script>
+  <nav>
+    {{#if hasPrevPage}}
+      <a href="/products?page={{prevPage}}">Anterior</a>
+    {{/if}}
+    <span>Página {{page}} de {{totalPages}}</span>
+    {{#if hasNextPage}}
+      <a href="/products?page={{nextPage}}">Siguiente</a>
+    {{/if}}
+  </nav>
+</body>
+</html>

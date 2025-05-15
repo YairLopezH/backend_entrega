@@ -1,6 +1,6 @@
-import  Router  from "express";
-import Product from "../models/product.model.js";
+import { Router } from "express";
 import Cart from "../models/cart.model.js";
+
 const router = Router();
 
 const getCartByIdPopulated = async (cid) => {
@@ -34,11 +34,8 @@ router.post("/:cid/products/:pid", async (req, res) => {
     if (!cart) return res.status(404).json({ status: "error", message: "Carrito no encontrado" });
 
     const productExists = cart.products.find(p => p.product.toString() === pid);
-    if (productExists) {
-      productExists.quantity += 1;
-    } else {
-      cart.products.push({ product: pid, quantity: 1 });
-    }
+    if (productExists) productExists.quantity += 1;
+    else cart.products.push({ product: pid, quantity: 1 });
 
     await cart.save();
     res.json({ status: "success", message: "Producto agregado al carrito" });
@@ -46,7 +43,6 @@ router.post("/:cid/products/:pid", async (req, res) => {
     res.status(500).json({ status: "error", message: error.message });
   }
 });
-
 
 router.delete("/:cid/products/:pid", async (req, res) => {
   try {
@@ -62,11 +58,10 @@ router.delete("/:cid/products/:pid", async (req, res) => {
   }
 });
 
-
 router.put("/:cid", async (req, res) => {
   try {
     const cid = req.params.cid;
-    const products = req.body.products; 
+    const products = req.body.products;
     if (!Array.isArray(products)) return res.status(400).json({ status: "error", message: "products debe ser un arreglo" });
 
     const cart = await Cart.findById(cid);
@@ -80,7 +75,6 @@ router.put("/:cid", async (req, res) => {
     res.status(500).json({ status: "error", message: error.message });
   }
 });
-
 
 router.put("/:cid/products/:pid", async (req, res) => {
   try {
@@ -102,7 +96,6 @@ router.put("/:cid/products/:pid", async (req, res) => {
     res.status(500).json({ status: "error", message: error.message });
   }
 });
-
 
 router.delete("/:cid", async (req, res) => {
   try {

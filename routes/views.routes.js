@@ -1,76 +1,55 @@
-import { Router } from "express";
-import Product from "../models/product.model.js";
-import Cart from "../models/cart.model.js";
+import { Router } from 'express';
+import Product from '../models/product.model.js';
+import Cart from '../models/cart.model.js';
 
 const router = Router();
 
-router.get("/", async (req, res) => {
+router.get('/products', async (req, res) => {
   try {
     const { limit = 10, page = 1, sort, query } = req.query;
 
     const filter = {};
-    if (query) {
-      filter.category = query;
-    }
+    if (query) filter.category = query;
+
+    let sortOption = {};
+    if (sort === 'asc') sortOption.price = 1;
+    else if (sort === 'desc') sortOption.price = -1;
 
     const options = {
-      page: parseInt(page),
       limit: parseInt(limit),
-      sort: sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {},
+      page: parseInt(page),
+      sort: sortOption,
       lean: true,
     };
 
     const result = await Product.paginate(filter, options);
 
-    res.render("home", {
+    const cartId = '6826567aada8ccd806c26121';
+
+    res.render('products', {
       products: result.docs,
-      pagination: {
-        totalPages: result.totalPages,
-        page: result.page,
-        hasNextPage: result.hasNextPage,
-        hasPrevPage: result.hasPrevPage,
-        nextPage: result.nextPage,
-        prevPage: result.prevPage,
-      },
+      totalPages: result.totalPages,
+      prevPage: result.hasPrevPage ? result.prevPage : null,
+      nextPage: result.hasNextPage ? result.nextPage : null,
+      page: result.page,
+      hasPrevPage: result.hasPrevPage,
+      hasNextPage: result.hasNextPage,
+      cartId,
     });
   } catch (error) {
-    console.error("Error al cargar productos:", error);
-    res.status(500).send("Error interno del servidor");
+    res.status(500).send('Error al cargar productos');
   }
 });
 
-router.get("/products", async (req, res) => {
+router.get('/carts/:cid', async (req, res) => {
   try {
-    const { limit = 10, page = 1, sort, query } = req.query;
+    const { cid } = req.params;
+    const cart = await Cart.findById(cid).populate('products.product').lean();
+    if (!cart) return res.status(404).send('Carrito no encontrado');
 
-    const filter = {};
-    if (query) {
-      filter.category = query;
-    }
-
-    const options = {
-      page: parseInt(page),
-      limit: parseInt(limit),
-      sort: sort === "asc" ? { price: 1 } : sort === "desc" ? { price: -1 } : {},
-      lean: true,
-    };
-
-    const result = await Product.paginate(filter, options);
-
-    res.render("products", {
-      products: result.docs,
-      pagination: {
-        totalPages: result.totalPages,
-        page: result.page,
-        hasNextPage: result.hasNextPage,
-        hasPrevPage: result.hasPrevPage,
-        nextPage: result.nextPage,
-        prevPage: result.prevPage,
-      },
-    });
+    res.render('cartDetail', { cart });
   } catch (error) {
-    console.error("Error al cargar productos:", error);
-    res.status(500).send("Error interno del servidor");
+    res.status(500).send('Error al cargar carrito');
   }
 });
 
