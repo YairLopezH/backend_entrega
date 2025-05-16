@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>{{product.title}}</title>
-  <script type="module" src="/js/cartActions.js"></script>
+  <script src="/js/cartActions.js"></script>
 </head>
 <body>
   <h1>{{product.title}}</h1>
@@ -11,7 +11,7 @@
   <p><strong>Categoría:</strong> {{product.category}}</p>
   <p><strong>Descripción:</strong> {{product.description}}</p>
   <p><strong>Stock:</strong> {{product.stock}}</p>
-  <p><strong>Estado:</strong> {{#if product.status}}Disponible{{else}}Agotado{{/if}}</p>
+  <p><strong>Estado:</strong> {{#if product.stock}}Disponible{{else}}Agotado{{/if}}</p>
 
   <button onclick="addToCart('{{product._id}}', '{{cartId}}')">Agregar al carrito</button>
 

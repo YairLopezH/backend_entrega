@@ -1,4 +1,4 @@
-export function addToCart(productId, cartId) {
+function addToCart(productId, cartId) {
   fetch(`/api/carts/${cartId}/products/${productId}`, {
     method: 'POST'
   })
@@ -15,3 +15,5 @@ export function addToCart(productId, cartId) {
     alert('Error al conectar con el servidor');
   });
 }
+
+window.addToCart = addToCart;

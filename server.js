@@ -2,6 +2,7 @@ import express from 'express';
 import handlebars from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 
 import productsRouter from './routes/products.routes.js';
 import cartsRouter from './routes/carts.routes.js';
@@ -16,6 +17,10 @@ app.engine('handlebars', handlebars.engine());
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,12 +34,27 @@ app.use('/api/carts', cartsRouter);
 app.use('/', viewsRouter);
 
 
+app.use((err, req, res, next) => {
+  console.error('Error en la aplicación:', err);
+  res.status(500).send('Error interno del servidor');
+});
+
+
 app.use((req, res) => {
   res.status(404).send('Página no encontrada');
 });
 
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en puerto ${PORT}`);
-});
+const MONGO_URL = 'mongodb://localhost:27017/codergames_entrega';
+
+mongoose.connect(MONGO_URL)
+  .then(() => {
+    console.log('Conectado a MongoDB');
+    app.listen(PORT, () => {
+      console.log(`Servidor escuchando en puerto ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('Error conectando a MongoDB:', error);
+  });

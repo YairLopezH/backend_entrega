@@ -11,10 +11,9 @@
     {{#each products}}
       <li>
         <strong>{{this.title}}</strong> - ${{this.price}} - {{this.category}}
-        <button onclick="addToCart('{{this._id}}', '{{../cartId}}')">Agregar al carrito</button>
+        <button class="add-to-cart-btn" data-productid="{{this._id}}" data-cartid="{{../cartId}}">Agregar al carrito</button>
       </li>
     {{/each}}
-  </ul>
 
   <nav>
     {{#if hasPrevPage}}

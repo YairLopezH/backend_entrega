@@ -41,6 +41,25 @@ router.get('/products', async (req, res) => {
   }
 });
 
+router.get('/products/:pid', async (req, res) => {
+  try {
+    const { pid } = req.params;
+    const { cartId } = req.query;
+    const product = await Product.findById(pid).lean();
+    if (!product) {
+      return res.status(404).send('Producto no encontrado');
+    }
+
+    if (!cartId) {
+      return res.status(400).send('cartId es requerido como query param');
+    }
+
+    res.render('productDetail', { product, cartId });
+  } catch (error) {
+    res.status(500).send('Error al cargar producto');
+  }
+});
+
 router.get('/carts/:cid', async (req, res) => {
   try {
     const { cid } = req.params;
